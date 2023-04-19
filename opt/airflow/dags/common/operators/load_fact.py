@@ -11,6 +11,7 @@ class LoadFactOperator(BaseOperator):
                  connection_id="",
                  table="",
                  sql_query="",
+                 is_truncated=True,
                  *args, **kwargs):
         super(LoadFactOperator, self).__init__(*args, **kwargs)
         # Map params here
@@ -18,10 +19,16 @@ class LoadFactOperator(BaseOperator):
         self.connection_id = connection_id
         self.table = table
         self.sql_query = sql_query
+        self.is_truncated = is_truncated
 
     def execute(self, context):
         postgres_hook = PostgresHook(postgres_conn_id=self.connection_id)
         self.log.info('Loading data into {table} fact table'.format(table=self.table))
+
+        if self.is_truncated:
+            self.log.info("Clearing data from {} table...".format(self.table))
+            postgres_hook.run("TRUNCATE TABLE {}".format(self.table))
+            self.log.info("Cleared data from {} table successfully".format(self.table))
 
         postgres_hook.run("""
             INSERT INTO {table}

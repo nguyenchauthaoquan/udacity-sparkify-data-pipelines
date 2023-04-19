@@ -9,6 +9,7 @@ from common.operators.load_dimension import LoadDimensionOperator
 from common.operators.data_quality import DataQualityOperator
 from common.operators.stage_redshift import StageToRedshiftOperator
 from common.helpers.sql_queries import SqlQueries
+from common.operators.drop_tables import DropTablesOperator
 
 default_args = {
     'owner': 'Haytham Nguyen',
@@ -54,7 +55,7 @@ stage_songs_to_redshift = StageToRedshiftOperator(
     region="us-east-1",
     s3={
         "bucket_name": "quannct-sparkify",
-        "prefix": "song-data"
+        "prefix": "song-data/A/A/B"
     },
     connection_id={
         "credentials": "aws_iam_credentials",
@@ -98,7 +99,7 @@ load_time_dimension_table = LoadDimensionOperator(
     task_id='Load_time_dim_table',
     dag=dag,
     connection_id="aws_redshift_connection",
-    table="artists",
+    table="time",
     sql_query=SqlQueries.time_table_insert
 )
 
@@ -109,10 +110,11 @@ run_quality_checks = DataQualityOperator(
         "credentials": "aws_iam_credentials",
         "redshift": "aws_redshift_connection"
     },
-    tables=["songplay", "users", "song", "artist", "time"]
+    tables=["artists", "songplays", "songs", "time", "users"]
 )
 
-end_operator = EmptyOperator(task_id='Stop_execution', dag=dag)
+end_operator = DropTablesOperator(task_id='Stop_execution', dag=dag, connection_id="aws_redshift_connection",
+                                  tables=["artists", "songplays", "songs", "time", "users"])
 
 start_operator >> [stage_songs_to_redshift, stage_events_to_redshift]
 
