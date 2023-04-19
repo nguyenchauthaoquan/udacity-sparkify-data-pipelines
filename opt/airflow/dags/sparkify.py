@@ -28,8 +28,8 @@ dag = DAG('sparkify-dag',
 start_operator = CreateTablesOperator(
     task_id='Begin_execution',
     dag=dag,
-    connection_id="redshift",
-    sql_file="./scripts/create_tables.sql"
+    connection_id="aws_redshift_connection",
+    sql_file="/opt/airflow/scripts/create_tables.sql"
 )
 
 stage_events_to_redshift = StageToRedshiftOperator(
@@ -43,7 +43,7 @@ stage_events_to_redshift = StageToRedshiftOperator(
     },
     connection_id={
         "credentials": "aws_iam_credentials",
-        "redshift": "redshift"
+        "redshift": "aws_redshift_connection"
     }
 )
 
@@ -58,14 +58,14 @@ stage_songs_to_redshift = StageToRedshiftOperator(
     },
     connection_id={
         "credentials": "aws_iam_credentials",
-        "redshift": "redshift"
+        "redshift": "aws_redshift_connection"
     }
 )
 
 load_songplays_table = LoadFactOperator(
     task_id='Load_songplays_fact_table',
     dag=dag,
-    connection_id="redshift",
+    connection_id="aws_redshift_connection",
     table="songplays",
     sql_query=SqlQueries.songplay_table_insert
 )
@@ -73,7 +73,7 @@ load_songplays_table = LoadFactOperator(
 load_user_dimension_table = LoadDimensionOperator(
     task_id='Load_user_dim_table',
     dag=dag,
-    connection_id="redshift",
+    connection_id="aws_redshift_connection",
     table="users",
     sql_query=SqlQueries.user_table_insert
 )
@@ -81,7 +81,7 @@ load_user_dimension_table = LoadDimensionOperator(
 load_song_dimension_table = LoadDimensionOperator(
     task_id='Load_song_dim_table',
     dag=dag,
-    connection_id="redshift",
+    connection_id="aws_redshift_connection",
     table="songs",
     sql_query=SqlQueries.song_table_insert
 )
@@ -89,7 +89,7 @@ load_song_dimension_table = LoadDimensionOperator(
 load_artist_dimension_table = LoadDimensionOperator(
     task_id='Load_artist_dim_table',
     dag=dag,
-    connection_id="redshift",
+    connection_id="aws_redshift_connection",
     table="artists",
     sql_query=SqlQueries.artist_table_insert
 )
@@ -97,7 +97,7 @@ load_artist_dimension_table = LoadDimensionOperator(
 load_time_dimension_table = LoadDimensionOperator(
     task_id='Load_time_dim_table',
     dag=dag,
-    connection_id="redshift",
+    connection_id="aws_redshift_connection",
     table="artists",
     sql_query=SqlQueries.time_table_insert
 )
@@ -107,7 +107,7 @@ run_quality_checks = DataQualityOperator(
     dag=dag,
     connection_id={
         "credentials": "aws_iam_credentials",
-        "redshift": "redshift"
+        "redshift": "aws_redshift_connection"
     },
     tables=["songplay", "users", "song", "artist", "time"]
 )

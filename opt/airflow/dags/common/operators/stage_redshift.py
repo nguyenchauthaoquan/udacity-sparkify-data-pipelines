@@ -11,7 +11,7 @@ class StageToRedshiftOperator(BaseOperator):
         ACCESS_KEY_ID '{access_key_id}'
         SECRET_ACCESS_KEY '{secret_key_id}'
         TRUNCATECOLUMNS BLANKSASNULL EMPTYASNULL
-        REGION AS {region}
+        REGION AS '{region}'
         FORMAT AS JSON 'auto'
         TIMEFORMAT AS 'auto';
     """
@@ -58,7 +58,7 @@ class StageToRedshiftOperator(BaseOperator):
             ACCESS_KEY_ID '{access_key_id}'
             SECRET_ACCESS_KEY '{secret_key_id}'
             TRUNCATECOLUMNS BLANKSASNULL EMPTYASNULL
-            REGION AS {region}
+            REGION AS '{region}'
             FORMAT AS JSON 'auto'
             TIMEFORMAT AS 'auto';
         """.format(
