@@ -29,7 +29,7 @@ start_operator = CreateTablesOperator(
     task_id='Begin_execution',
     dag=dag,
     connection_id="redshift",
-    sql_file="../scripts/create_tables.sql"
+    sql_file="./scripts/create_tables.sql"
 )
 
 stage_events_to_redshift = StageToRedshiftOperator(
