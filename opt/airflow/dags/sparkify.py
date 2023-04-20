@@ -109,7 +109,28 @@ run_quality_checks = DataQualityOperator(
         "credentials": "aws_iam_credentials",
         "redshift": "aws_redshift_connection"
     },
-    tables=["artists", "songplays", "songs", "time", "users"]
+    dq_checks=[
+        {
+            "test_sql": "SELECT COUNT(*) FROM artists",
+            "expected_results": 0
+        },
+        {
+            "test_sql": "SELECT COUNT(*) FROM songplays",
+            "expected_results": 1
+        },
+        {
+            "test_sql": "SELECT COUNT(*) FROM songs",
+            "expected_results": 2
+        },
+        {
+            "test_sql": "SELECT COUNT(*) FROM time",
+            "expected_results": 3
+        },
+        {
+            "test_sql": "SELECT COUNT(*) FROM users",
+            "expected_results": 4
+        },
+    ]
 )
 
 end_operator = DropTablesOperator(task_id='Stop_execution', dag=dag, connection_id="aws_redshift_connection",
